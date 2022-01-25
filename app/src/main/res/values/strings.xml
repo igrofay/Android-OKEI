@@ -1,0 +1,24 @@
+<resources>
+    <string name="app_name">OKEI</string>
+    <string name="login">Логин</string>
+    <string name="password">Пароль</string>
+    <string name="sign_in">Войти</string>
+    <string name="advertisement">Оренбургский колледж экономики и информатики</string>
+    <string name="wrong_data">Неверные данные</string>
+    <string name="input_data">Введите данные</string>
+    <string name="input_login">Введите логин</string>
+    <string name="input_password">Введите пароль</string>
+    <string name="calendar_plan">Календарный план</string>
+    <string name="last_change">Последние измение:</string>
+    <string name="connection_error">Ошибка в подключение</string>
+    <string name="server_error">Ошибка на сервере</string>
+    <string name="open">Открыть</string>
+    <string name="list_teachers">Список преподователей</string>
+    <string name="search">Поиск</string>
+    <string name="criteria">Критерии</string>
+    <string name="more">Подробнее..</string>
+    <string name="yes_points">Да(%1$s балл(-а))</string>
+    <string name="no_points">Нет(%1$s балл(-а))</string>
+    <string name="nigh_points">Высокий(%1$s балл(-а))</string>
+    <string name="average_points">Средний(%1$s балл(-а))</string>
+</resources>
