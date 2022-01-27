@@ -9,6 +9,7 @@ import com.studies.okei.R
 import com.studies.okei.data.entities.Month
 import com.studies.okei.data.entities.Teacher
 import com.studies.okei.data.entities.User
+import com.studies.okei.data.entities.VoteCriterion
 import com.studies.okei.domain.content.ContentUseCase
 import com.studies.okei.domain.content.ContentService
 import com.studies.okei.domain.repository.CriterionRepository
@@ -18,7 +19,7 @@ import kotlinx.coroutines.launch
 class ViewModelContent(
     private val contentService: ContentService,
     private val contentUseCase: ContentUseCase,
-    private val criterionRepository: CriterionRepository
+    criterionRepository: CriterionRepository
 ): ViewModel() {
     val title = mutableStateOf(R.string.calendar_plan)
     lateinit var user: User
@@ -31,6 +32,9 @@ class ViewModelContent(
     private val _listTeachers = mutableStateListOf<Teacher>()
     val listMonths: List<Month> get() = _listMoths
     val listTeachers: MutableList<Teacher> get()=_listTeachers
+
+    private val _listVoteCriterion = mutableStateListOf<VoteCriterion>()
+    val listVoteCriterion : MutableList<VoteCriterion> get() = _listVoteCriterion
 
     val listCriterion = criterionRepository.listCriterion
     val mapMore = criterionRepository.moreCriterion
@@ -54,6 +58,44 @@ class ViewModelContent(
                 success = {
                     _listTeachers.clear()
                     _listTeachers.addAll(it)
+                },
+                error401 = resetUser,
+                connectionError = {say.value =it }
+            )
+        }
+    }
+    fun getListVoteCriterion(
+        nameMonth: String,
+        loginTeacher: String
+    ){
+        viewModelScope.launch(Dispatchers.IO){
+            contentUseCase.processResponse<List<VoteCriterion>>(
+                httpResponse = { contentService.listVoteCriterion(user.token,nameMonth, loginTeacher) },
+                success = {
+                    _listVoteCriterion.clear()
+                    _listVoteCriterion.addAll(it)
+                },
+                error401 = resetUser,
+                connectionError = {say.value =it }
+            )
+        }
+    }
+    fun putChangeVoteCriterion(
+        nameMonth: String,
+        loginTeacher: String,
+        changeVoteCriterion: VoteCriterion
+    ){
+        viewModelScope.launch(Dispatchers.IO) {
+            contentUseCase.processResponseForPut(
+                httpResponse = {contentService.putChangeVoteCriterion(user.token, nameMonth ,loginTeacher, changeVoteCriterion) },
+                success = {
+                    _listVoteCriterion.forEach {
+                        if(it.id == changeVoteCriterion.id){
+                            it.transplantation(changeVoteCriterion)
+                            return@forEach
+                        }
+                    }
+                    say.value = R.string.chage
                 },
                 error401 = resetUser,
                 connectionError = {say.value =it }

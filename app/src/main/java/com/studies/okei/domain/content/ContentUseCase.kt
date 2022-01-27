@@ -27,7 +27,27 @@ class ContentUseCase {
             }
         }catch (e: Exception){
             withContext(Dispatchers.Main){
-               Log.e("error", e.message.toString())
+                connectionError(R.string.connection_error)
+            }
+        }
+    }
+    suspend inline fun processResponseForPut(
+        httpResponse: ()-> HttpResponse,
+        crossinline success: ()-> Unit,
+        crossinline connectionError: (Int)->Unit,
+        crossinline error401:()->Unit
+    ){
+        try {
+            val response = httpResponse()
+            withContext(Dispatchers.Main){
+                when(response.status){
+                    HttpStatusCode.OK -> success()
+                    HttpStatusCode.Unauthorized -> error401()
+                    HttpStatusCode.InternalServerError -> connectionError(R.string.server_error)
+                }
+            }
+        }catch (e: Exception){
+            withContext(Dispatchers.Main){
                 connectionError(R.string.connection_error)
             }
         }

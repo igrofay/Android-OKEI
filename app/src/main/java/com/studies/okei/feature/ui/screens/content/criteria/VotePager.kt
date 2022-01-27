@@ -1,5 +1,6 @@
 package com.studies.okei.feature.ui.screens.content.criteria
 
+import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -10,6 +11,7 @@ import androidx.compose.material.MaterialTheme.colors
 import androidx.compose.material.MaterialTheme.typography
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -25,6 +27,7 @@ import com.google.accompanist.pager.pagerTabIndicatorOffset
 import com.google.accompanist.pager.rememberPagerState
 import com.studies.okei.R
 import com.studies.okei.data.entities.Criterion
+import com.studies.okei.data.entities.VoteCriterion
 import com.studies.okei.feature.ui.theme.AppDimensions
 import com.studies.okei.feature.ui.theme.Orange700
 import kotlinx.coroutines.launch
@@ -36,12 +39,18 @@ fun VotePager(
     openVisibleItem: Int,
     mapMore: Map<Int,String>,
     nameTeacher: String?=null,
+    _listVoteCriterion: List<VoteCriterion>?=null,
+    putChangeVoteCriterion: ((VoteCriterion)->Unit)? =null,
+    nameAppraiser: String?= null
 ) {
     val scope = rememberCoroutineScope()
     val pagerState = rememberPagerState()
     val visibleItem = pagerState.currentPage
     val anim: (Int)-> Unit = {
         scope.launch { pagerState.animateScrollToPage(it) }
+    }
+    val listVoteCriterion = remember {
+        _listVoteCriterion
     }
     LaunchedEffect(openVisibleItem){
         anim(openVisibleItem)
@@ -112,12 +121,16 @@ fun VotePager(
             val criterion = listCriterion[page]
             VoteItem(
                 criterion = criterion,
-                more = mapMore[criterion.idParent]!!
+                more = mapMore[criterion.idParent]!!,
+                voteCriterion = listVoteCriterion?.getOrNull(page),
+                putChangeVoteCriterion = putChangeVoteCriterion,
+                _nameAppraiser = nameAppraiser
             )
         }
         Row(
             Modifier
-                .fillMaxWidth(0.9f).height(IntrinsicSize.Min)
+                .fillMaxWidth(0.9f)
+                .height(IntrinsicSize.Min)
                 .padding(vertical = AppDimensions.grid_5_5),
             verticalAlignment = Alignment.CenterVertically
         ) {
@@ -151,8 +164,9 @@ fun VotePager(
                 nameTeacher?.let {
                     Box(
                         modifier = Modifier
-                            .fillMaxHeight().fillMaxWidth(0.8f)
-                            .border(AppDimensions.border_1, colors.primary,CircleShape)
+                            .fillMaxHeight()
+                            .fillMaxWidth(0.8f)
+                            .border(AppDimensions.border_1, colors.primary, CircleShape)
                             .padding(horizontal = AppDimensions.grid_3),
                         contentAlignment = Alignment.Center
                     ){

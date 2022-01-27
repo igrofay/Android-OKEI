@@ -1,7 +1,11 @@
 package com.studies.okei.feature.ui.screens.content.criteria
 
+import android.icu.text.SimpleDateFormat
+import android.os.Build
+import androidx.annotation.RequiresApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.text.ClickableText
@@ -17,6 +21,8 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringArrayResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.semantics.Role.Companion.Checkbox
+import androidx.compose.ui.semantics.Role.Companion.RadioButton
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
@@ -24,16 +30,38 @@ import com.github.skgmn.composetooltip.*
 import com.studies.okei.R
 import com.studies.okei.data.entities.Criterion
 import com.studies.okei.data.entities.ValueIndicator
+import com.studies.okei.data.entities.VoteCriterion
 import com.studies.okei.feature.ui.theme.AppDimensions
 import com.studies.okei.feature.ui.theme.Gray200
 import com.studies.okei.feature.ui.theme.text
+import java.util.*
 
 @Composable
 fun VoteItem(
     criterion: Criterion,
     more: String,
-    enable: Boolean = true,
+    voteCriterion: VoteCriterion?=null,
+    putChangeVoteCriterion: ((VoteCriterion)->Unit)?=null,
+    _nameAppraiser: String?= null
 ) {
+    val mutableVoteCriterion =
+        if (voteCriterion==null) null
+        else remember {
+            voteCriterion.toVoteCriterion()
+        }
+    val onClickVote: (Int)-> Unit = {  new_point->
+        putChangeVoteCriterion?.let { putChange->
+            mutableVoteCriterion ?: return@let
+            mutableVoteCriterion.apply {
+                points.value = new_point
+                nameAppraiser.value = _nameAppraiser!!
+                lastChange.value = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+                     getCurrentDate()
+                } else ""
+            }
+            putChange(mutableVoteCriterion.toVoteCriterion())
+        }
+    }
     val topRating =  stringResource(
         if (criterion.valueIndicator== ValueIndicator.YesOrNo.name)
             R.string.yes_points
@@ -54,7 +82,7 @@ fun VoteItem(
         Text(
             text = criterion.name,
             color = colors.text,
-            style = typography.body2
+            style = typography.body1
         )
         Box(
             Modifier.padding(vertical = AppDimensions.grid_2)
@@ -80,6 +108,12 @@ fun VoteItem(
         }
         Spacer(modifier = Modifier.height(AppDimensions.grid_5_5))
         Row(
+            modifier = Modifier
+                .clip(CircleShape)
+                .clickable {
+                    onClickVote(criterion.topRating)
+                }
+                .padding(vertical = AppDimensions.grid_1),
             verticalAlignment = Alignment.CenterVertically
         ) {
             Box(
@@ -87,30 +121,39 @@ fun VoteItem(
                     .size(AppDimensions.grid_5_5 * 2)
                     .clip(CircleShape)
                     .background(
-                        if (false) colors.primary else Color.Transparent
+                        if (criterion.topRating == mutableVoteCriterion?.points?.value) colors.primary
+                        else Color.Transparent
                     )
                     .border(
                         AppDimensions.border_1,
-                        if (false) Color.Transparent else colors.primary,
+                        if (criterion.topRating ==  mutableVoteCriterion?.points?.value) Color.Transparent
+                        else colors.primary,
                         CircleShape
                     ),
                 contentAlignment = Alignment.Center
             ){
                 Text(
                     text = "1",
-                    style = typography.body2,
-                    color = if (false) colors.background else colors.primary
+                    style = typography.body1,
+                    color = if (criterion.topRating ==  mutableVoteCriterion?.points?.value) colors.background
+                    else colors.primary
                 )
             }
-            Spacer(modifier = Modifier.width(AppDimensions.grid_5_5))
             Text(
                 text = topRating,
-                style = typography.body2,
-                color = colors.text
+                style = typography.body1,
+                color = colors.text,
+                modifier = Modifier.padding(horizontal = AppDimensions.grid_5_5)
             )
         }
-        Spacer(modifier = Modifier.height(AppDimensions.grid_5_5))
+        Spacer(modifier = Modifier.height(AppDimensions.grid_5))
         Row(
+            modifier = Modifier
+                .clip(CircleShape)
+                .clickable {
+                    onClickVote(criterion.lowestRating)
+                }
+                .padding(vertical = AppDimensions.grid_1),
             verticalAlignment = Alignment.CenterVertically
         ) {
             Box(
@@ -118,26 +161,34 @@ fun VoteItem(
                     .size(AppDimensions.grid_5_5 * 2)
                     .clip(CircleShape)
                     .background(
-                        if (false) colors.primary else Color.Transparent
+                        if (criterion.lowestRating ==  mutableVoteCriterion?.points?.value) colors.primary else Color.Transparent
                     )
                     .border(
                         AppDimensions.border_1,
-                        if (false) Color.Transparent else colors.primary,
+                        if (criterion.lowestRating == mutableVoteCriterion?.points?.value) Color.Transparent else colors.primary,
                         CircleShape
                     ),
                 contentAlignment = Alignment.Center
             ){
                 Text(
                     text = "2",
-                    style = typography.body2,
-                    color = if (false) colors.background else colors.primary
+                    style = typography.body1,
+                    color = if (criterion.lowestRating ==  mutableVoteCriterion?.points?.value) colors.background else colors.primary
                 )
             }
-            Spacer(modifier = Modifier.width(AppDimensions.grid_5_5))
             Text(
                 text = lowestRating,
-                style = typography.body2,
-                color = colors.text
+                style = typography.body1,
+                color = colors.text,
+                modifier = Modifier.padding(horizontal = AppDimensions.grid_5_5)
+            )
+        }
+        Spacer(modifier = Modifier.weight(1f))
+        mutableVoteCriterion?.let {
+            Text(text = "${stringResource(R.string.appraiser)} ${it.nameAppraiser.value}\n"+
+                    "${stringResource(R.string.last_change)} ${it.lastChange.value}",
+                color = colors.text,
+                fontSize = AppDimensions.font_3
             )
         }
     }
@@ -147,7 +198,6 @@ fun VoteItem(
 fun TooltipMore(
     text: String,
     onDismissRequest: ()-> Unit
-
 ) {
     Tooltip(
         anchorEdge = AnchorEdge.Bottom,
@@ -166,4 +216,10 @@ fun TooltipMore(
             color = Gray200
         )
     }
+}
+
+@RequiresApi(Build.VERSION_CODES.N)
+fun getCurrentDate():String{
+    val sdf = SimpleDateFormat("dd.MM.yyyy")
+    return sdf.format(Date())
 }

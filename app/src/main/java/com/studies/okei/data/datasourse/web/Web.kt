@@ -1,6 +1,7 @@
 package com.studies.okei.data.datasourse.web
 
 import com.studies.okei.data.entities.UserAuthData
+import com.studies.okei.data.entities.VoteCriterion
 import com.studies.okei.domain.authorization.AuthenticationService
 import com.studies.okei.domain.content.ContentService
 import io.ktor.client.*
@@ -13,7 +14,7 @@ import io.ktor.client.statement.*
 import io.ktor.http.*
 
 object Web : AuthenticationService, ContentService {
-    private const val Url_Server = "http://176.28.64.201:3434"
+    private const val Url_Server = "http://192.168.10.33:3434"
     // 192.168.10.33:3434
     // 176.28.64.201:3434
     private val client by lazy {
@@ -49,6 +50,33 @@ object Web : AuthenticationService, ContentService {
             headers{
                 append(HttpHeaders.Authorization, token)
             }
+        }
+    }
+
+    override suspend fun listVoteCriterion(
+        token: String,
+        nameMonth: String,
+        loginTeacher: String
+    ): HttpResponse {
+        return client.get("$Url_Server/months/$nameMonth/$loginTeacher"){
+            headers{
+                append(HttpHeaders.Authorization, token)
+            }
+        }
+    }
+
+    override suspend fun putChangeVoteCriterion(
+        token: String,
+        nameMonth: String,
+        loginTeacher: String,
+        voteCriterion: VoteCriterion
+    ): HttpResponse{
+        return client.put("$Url_Server/months/$nameMonth/$loginTeacher"){
+            headers{
+                append(HttpHeaders.Authorization, token)
+            }
+            contentType(ContentType.Application.Json)
+            body = voteCriterion
         }
     }
 

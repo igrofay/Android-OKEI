@@ -21,4 +21,6 @@
     <string name="no_points">Нет(%1$s балл(-а))</string>
     <string name="nigh_points">Высокий(%1$s балл(-а))</string>
     <string name="average_points">Средний(%1$s балл(-а))</string>
+    <string name="chage">Изменено</string>
+    <string name="appraiser">Оценщик:</string>
 </resources>

@@ -1,5 +1,6 @@
 package com.studies.okei.feature.navigation
 
+import android.util.Log
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.runtime.Composable
@@ -13,6 +14,8 @@ import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import com.studies.okei.R
 import com.studies.okei.data.entities.Teacher
+import com.studies.okei.data.entities.VoteCriterion
+import com.studies.okei.data.state.AccessLevels
 import com.studies.okei.feature.ui.screens.content.calendar.CalendarPlanScreen
 import com.studies.okei.feature.ui.screens.content.criteria.CriteriaScreen
 import com.studies.okei.feature.ui.screens.content.teachers.TeachersScreen
@@ -80,11 +83,27 @@ fun ContentNavigation(
             val month = backStackEntry.arguments?.getString(ContentRoute.Criteria.arg_month)!!
             val loginTeacher = backStackEntry.arguments?.getString(ContentRoute.Criteria.arg_loginTeacher)!!
             val nameTeacher = backStackEntry.arguments?.getString(ContentRoute.Criteria.arg_nameTeacher)!!
+            val putChangeVoteCriterion: (VoteCriterion)-> Unit = {
+                viewModelContent.putChangeVoteCriterion(month,loginTeacher, it)
+            }
             CriteriaScreen(
                 viewModelContent.listCriterion,
                 viewModelContent.mapMore,
-                nameTeacher
+                nameTeacher,
+                requestVoteCriterion = {
+                    viewModelContent.getListVoteCriterion(
+                        month, loginTeacher
+                    )
+                },
+                viewModelContent.listVoteCriterion,
+                putChangeVoteCriterion = if (viewModelContent.user.status != AccessLevels.Director.status)
+                    putChangeVoteCriterion else null,
+                nameAppraiser = viewModelContent.user.name
             )
+            BackHandler {
+                nav.popBackStack()
+                viewModelContent.listVoteCriterion.clear()
+            }
         }
     }
 }

@@ -8,6 +8,7 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
 import com.google.accompanist.pager.HorizontalPager
 import com.studies.okei.data.entities.Criterion
+import com.studies.okei.data.entities.VoteCriterion
 import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterialApi::class)
@@ -16,7 +17,14 @@ fun CriteriaScreen(
     listCriterion : List<Criterion>,
     mapMore: Map<Int,String>,
     nameTeacher: String?=null,
+    requestVoteCriterion: (()->Unit)? = null,
+    listVoteCriterion: List<VoteCriterion>?=null,
+    putChangeVoteCriterion: ((VoteCriterion)->Unit)? =null,
+    nameAppraiser: String?= null
 ) {
+    LaunchedEffect(true){
+        requestVoteCriterion?.invoke()
+    }
     val scope = rememberCoroutineScope()
     val state = rememberModalBottomSheetState(
         initialValue = ModalBottomSheetValue.Hidden,
@@ -33,7 +41,10 @@ fun CriteriaScreen(
                 listCriterion,
                 visibleItem,
                 mapMore,
-                nameTeacher
+                nameTeacher,
+                listVoteCriterion,
+                putChangeVoteCriterion,
+                nameAppraiser = nameAppraiser
             )
         },
         sheetState = state,
