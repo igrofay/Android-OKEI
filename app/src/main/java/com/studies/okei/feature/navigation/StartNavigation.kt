@@ -9,12 +9,15 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
+import com.studies.okei.R
 import com.studies.okei.app.appFactoryVM
+import com.studies.okei.data.state.AccessLevels
 import com.studies.okei.feature.ui.screens.content.ContentScreen
 import com.studies.okei.feature.ui.screens.welcome.sign_in.SignInScreen
 import com.studies.okei.feature.ui.screens.welcome.splash.SplashScreen
@@ -60,8 +63,8 @@ fun StartNavigation(
         composable(StartRoute.Content.route){
             user?.let {
                 ContentScreen(
-                    user = it,
-                    resetUser = viewModelStart::resetUser
+                    if (it.status!=AccessLevels.Teacher.status) stringResource(R.string.calendar_plan)
+                    else stringResource(R.string.criteria)
                 )
             } ?: LaunchedEffect(true){ navController.popBackStack()}
         }

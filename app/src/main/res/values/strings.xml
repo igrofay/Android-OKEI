@@ -23,4 +23,5 @@
     <string name="average_points">Средний(%1$s балл(-а))</string>
     <string name="chage">Изменено</string>
     <string name="appraiser">Оценщик:</string>
+    <string name="premium_calculation">Расчет премии</string>
 </resources>

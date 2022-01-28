@@ -4,17 +4,13 @@ import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
-import androidx.lifecycle.viewModelScope
 import androidx.work.WorkManager
-import androidx.work.await
 import com.studies.okei.R
 import com.studies.okei.app.App
 import com.studies.okei.data.entities.UserAuthData
-import com.studies.okei.data.repository.UserRepositoryImpl
 import com.studies.okei.domain.authorization.AuthenticationObserver
 import com.studies.okei.domain.authorization.WorkAuthorization
 import com.studies.okei.domain.repository.UserRepository
-import kotlinx.coroutines.launch
 
 class ViewModelStart(
     private val userRepository: UserRepository

@@ -12,9 +12,9 @@ import com.studies.okei.feature.vm.ViewModelStart
 class AppVMFactory: ViewModelProvider.Factory {
     override fun <T : ViewModel?> create(modelClass: Class<T>): T {
         return when(modelClass){
-            ViewModelStart::class.java-> ViewModelStart(UserRepositoryImpl()) as T
+            ViewModelStart::class.java-> ViewModelStart(UserRepositoryImpl) as T
             ViewModelContent::class.java->ViewModelContent(
-                Web, ContentUseCase(), CriterionRepositoryImpl()
+                UserRepositoryImpl, Web, ContentUseCase(), CriterionRepositoryImpl()
             ) as T
             else-> throw IllegalAccessException("No VM")
         }

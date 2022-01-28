@@ -1,5 +1,6 @@
 package com.studies.okei.feature.ui.screens.content.calendar
 
+import androidx.activity.compose.BackHandler
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
@@ -33,7 +34,8 @@ import kotlinx.coroutines.launch
 fun CalendarPlanScreen(
     _listCurrentMonths: List<Month>,
     requestListMoths: ()->Unit,
-    openListTeacher: (String)->Unit
+    openListTeacher: (String)->Unit,
+    watchAwards: (()->Unit)?
 ) {
     LaunchedEffect(true){
         requestListMoths()
@@ -49,11 +51,14 @@ fun CalendarPlanScreen(
     var selectMonth by remember {
         mutableStateOf(listMonth[0])
     }
+    BackHandler(state.isVisible) { scope.launch { state.hide() } }
     Box {
         ModalBottomSheetLayout(
             sheetContent = {
                 Box(
-                    modifier = Modifier.fillMaxWidth().fillMaxHeight(0.5f),
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .fillMaxHeight(0.5f),
                     contentAlignment = Alignment.TopCenter
                 ){
                     Box(modifier = Modifier
@@ -63,14 +68,20 @@ fun CalendarPlanScreen(
                         .width(AppDimensions.grid_5_5 * 2)
                         .height(AppDimensions.grid_2)
                     )
-                    ListItemPicker(
-                        value = selectMonth,
-                        onValueChange = {selectMonth = it},
-                        list = listMonth.toList(),
-                        modifier = Modifier.align(Alignment.Center).fillMaxWidth(0.4f),
-                        textStyle = typography.subtitle2.copy(colors.primary),
-                        dividersColor = colors.primary.copy(0.7f)
-                    )
+                    Box(
+                        modifier = Modifier
+                            .align(Alignment.Center)
+                            .offset(y = -AppDimensions.grid_5_5)
+                    ) {
+                        ListItemPicker(
+                            value = selectMonth,
+                            onValueChange = {selectMonth = it},
+                            list = listMonth.toList(),
+                            modifier = Modifier.fillMaxWidth(0.4f),
+                            textStyle = typography.subtitle2.copy(colors.primary),
+                            dividersColor = colors.primary.copy(0.7f)
+                        )
+                    }
 
                 }
             },
@@ -79,15 +90,42 @@ fun CalendarPlanScreen(
             sheetBackgroundColor = colors.background
         ) {
             val listCurrentMonths = remember { _listCurrentMonths }
-            ListMonths(listMonths = listCurrentMonths,openListTeacher)
+            Box(modifier = Modifier.fillMaxSize()) {
+                ListMonths(listMonths = listCurrentMonths, openListTeacher)
+                watchAwards?.let {
+                    Box(
+                        modifier = Modifier
+                            .padding(
+                                bottom = AppDimensions.grid_4_5,
+                                end = AppDimensions.grid_4_5
+                            )
+                            .align(Alignment.BottomEnd)
+                            .clip(CircleShape)
+                            .background(colors.background)
+                            .border(AppDimensions.border_1, colors.primary, RoundedCornerShape(50))
+                            .clickable(onClick = it),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        Icon(
+                            painterResource(R.drawable.ic_ruble),
+                            null,
+                            tint = colors.primary,
+                            modifier = Modifier
+                                .padding(AppDimensions.grid_3_5)
+                                .size(AppDimensions.grid_3_5 * 2)
+                        )
+                    }
+                }
+            }
         }
+
         Row(
             Modifier
                 .padding(bottom = AppDimensions.grid_4_5)
                 .align(Alignment.BottomCenter)
                 .clip(CircleShape)
-                .border(AppDimensions.border_1, colors.primary, RoundedCornerShape(50))
                 .background(colors.background)
+                .border(AppDimensions.border_1, colors.primary, RoundedCornerShape(50))
                 .clickable {
                     if (state.isVisible) openListTeacher(selectMonth)
                     else scope.launch { state.show() }
@@ -110,7 +148,6 @@ fun CalendarPlanScreen(
                 )
             }
         }
-
 
     }
 }

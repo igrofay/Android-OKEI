@@ -8,7 +8,7 @@ import com.studies.okei.domain.repository.UserRepository
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 
-class UserRepositoryImpl : UserRepository{
+object UserRepositoryImpl : UserRepository{
     private val KEY_AUT = "KET_AUT"
 
     private val _user = mutableStateOf<User?>(null)
@@ -18,7 +18,6 @@ class UserRepositoryImpl : UserRepository{
     override val userAuthData
         get()= _userAuthData
 
-    init{ getUserAuthData() }
     override fun getUserAuthData() {
         _userAuthData.value = getAppSP()
             .getString(KEY_AUT, null)

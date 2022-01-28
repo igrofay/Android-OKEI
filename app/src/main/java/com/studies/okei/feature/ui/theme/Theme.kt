@@ -51,6 +51,12 @@ fun OKEITheme(darkTheme: Boolean = isSystemInDarkTheme(), content: @Composable (
 val AppDimensions : Dimensions
     @Composable
     get() {
-        val configuration = LocalConfiguration.current
-        return Dimensions.invoke(configuration.screenWidthDp/360f)
+        val screenWidthDp  = LocalConfiguration.current.screenWidthDp
+        val coefficient = when{
+            screenWidthDp<=540->1f
+            screenWidthDp<=720->1.5f
+            screenWidthDp<=1080->2f
+            else -> 2.5f
+        }
+        return Dimensions.invoke(coefficient)
     }

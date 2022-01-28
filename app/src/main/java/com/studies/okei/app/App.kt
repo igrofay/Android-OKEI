@@ -2,6 +2,7 @@ package com.studies.okei.app
 
 import android.app.Application
 import android.content.Context
+import com.studies.okei.data.repository.UserRepositoryImpl
 
 class App : Application() {
     companion object{
@@ -12,5 +13,6 @@ class App : Application() {
     override fun onCreate() {
         super.onCreate()
         appContext = applicationContext
+        UserRepositoryImpl.getUserAuthData()
     }
 }

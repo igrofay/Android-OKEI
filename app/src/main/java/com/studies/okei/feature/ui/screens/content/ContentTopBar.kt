@@ -1,5 +1,6 @@
 package com.studies.okei.feature.ui.screens.content
 
+import android.util.Log
 import androidx.annotation.StringRes
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -24,7 +25,7 @@ import com.studies.okei.feature.ui.theme.Blue700
 
 @Composable
 fun ContentTopBar(
-    @StringRes title: Int
+    title: String
 ) {
     val color = colors.primary
     val border =  AppDimensions.border_1
@@ -38,14 +39,15 @@ fun ContentTopBar(
             modifier = Modifier
                 .fillMaxWidth()
                 .height(IntrinsicSize.Min)
-                .padding(bottom = AppDimensions.grid_3)
+                .padding(bottom = AppDimensions.grid_2)
         ){
             Box(modifier = Modifier
                 .height(border)
                 .weight(0.5f)
-                .background(color))
+                .background(color)
+            )
             Text(
-                text = stringResource(title),
+                text = title,
                 color = color,
                 style = typography.body1,
                 textAlign = TextAlign.Center,

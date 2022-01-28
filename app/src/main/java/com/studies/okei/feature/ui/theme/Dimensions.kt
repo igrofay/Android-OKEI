@@ -29,7 +29,7 @@ class Dimensions private constructor(
     val border_1: Dp = 1.dp*coefficient,
     val corner_1: Dp = 4.dp*coefficient,
     val corner_2: Dp = 8.dp*coefficient,
-    val height_top_bar: Dp = 100.dp+10.dp*coefficient
+    val height_top_bar: Dp = 100.dp+20.dp*coefficient
 ){
     companion object{
         private var thisDimensions: Dimensions? = null
